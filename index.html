@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>MindAR Basic Test</title>
+    <title>MindAR Video Overlay</title>
+  
+    <!-- MindAR core first -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image.prod.js"></script>
+  
+    <!-- A-Frame -->
+    <script src="https://unpkg.com/aframe@1.2.0/dist/aframe.min.js"></script>
+  
+    <!-- MindAR + A-Frame glue -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+  
+    <style>
+      body { margin: 0; overflow: hidden; }
+    </style>
   </head>
   <body>
+    <a-scene mindar-image="imageTargetSrc: targetsv2.mind?v=3; autoStart: true; uiLoading: yes;" embedded>
+      <!-- Debug Box to check scene rendering -->
+      <a-box position="0 0 -2" color="red"></a-box> <!-- Red box for debugging -->
+
+      <a-assets>
+        <video id="video" src="video.mp4" autoplay loop="true" muted="true" preload="auto" crossorigin="anonymous"></video>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-video src="#video" width="1" height="0.5625" position="0 0 0"></a-video>
+      </a-entity>
+    </a-scene>
+
+    <!-- Add debugging log here -->
     <script>
-      const mindar = new MindAR.MindAR({
-        container: document.body,
-        imageTargetSrc: "targetsv2.mind?v=3",
+      // Check if MindAR and the scene are loaded
+      console.log("MindAR initialized and scene loaded");
+
+      const mindarScene = document.querySelector('a-scene');
+      mindarScene.addEventListener('loaded', () => {
+        console.log("A-Frame scene loaded successfully");
       });
 
-      mindar.start().then(() => {
-        const video = document.createElement("video");
-        video.src = "video.mp4";
-        video.autoplay = true;
-        video.loop = true;
-        video.muted = true;
-        video.style.position = "absolute";
-        video.style.top = "50%";
-        video.style.left = "50%";
-        video.style.transform = "translate(-50%, -50%)";
-        document.body.appendChild(video);
-      });
+      // Check if video is being loaded
+      const video = document.querySelector('#video');
+      video.onloadeddata = () => {
+        console.log("Video is loaded and ready to play");
+      };
     </script>
   </body>
 </html>
+

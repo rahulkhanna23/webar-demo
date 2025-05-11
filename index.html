@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MindAR Video Overlay</title>
+  <title>MindAR Image Overlay</title>
 
   <!-- MindAR Core -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image.prod.js"></script>
@@ -9,7 +9,7 @@
   <!-- A-Frame -->
   <script src="https://unpkg.com/aframe@1.2.0/dist/aframe.min.js"></script>
 
-  <!-- MindAR + A-Frame Integration -->
+  <!-- MindAR + A-Frame Glue -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
@@ -25,56 +25,34 @@
     device-orientation-permission-ui="enabled: true"
   >
     <a-assets>
-      <video
-        id="video"
-        src="video.mp4"
-        preload="auto"
-        autoplay
-        loop
-        muted
-        playsinline
-        crossorigin="anonymous"
-      ></video>
+      <img id="overlay-img" src="overlay.png" crossorigin="anonymous" />
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false" camera="active: true"></a-camera>
 
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-video
-        src="#video"
+      <a-plane
+        src="#overlay-img"
         width="1"
-        height="0.5625"
+        height="0.75"
         position="0 0 -1"
         rotation="0 0 0"
-      ></a-video>
+      ></a-plane>
     </a-entity>
   </a-scene>
 
-  <!-- Debug / Autoplay Fix -->
   <script>
     window.addEventListener("DOMContentLoaded", () => {
-      const video = document.querySelector("#video");
-
-      video.addEventListener("loadeddata", () => {
-        video.play().then(() => {
-          console.log("🎥 Video is loaded and ready to play");
-        }).catch((e) => {
-          console.error("⚠️ Video playback failed:", e);
-        });
-      });
-
       document.querySelector("a-scene").addEventListener("arReady", () => {
         console.log("🟢 MindAR initialized and scene loaded");
       });
 
       document.querySelector("a-scene").addEventListener("targetFound", () => {
         console.log("✅ Target FOUND!");
-        video.play();
       });
 
       document.querySelector("a-scene").addEventListener("targetLost", () => {
         console.log("❌ Target LOST!");
-        video.pause();
       });
     });
   </script>

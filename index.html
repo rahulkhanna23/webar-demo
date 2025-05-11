@@ -17,8 +17,9 @@
     </style>
   </head>
   <body>
+    <!-- A-Frame Scene with MindAR Integration -->
     <a-scene
-      mindar-image="imageTargetSrc: targetsv2.mind; autoStart: true; uiLoading: yes;"
+      mindar-image="imageTargetSrc: target.mind; autoStart: true; uiLoading: yes;"
       embedded
       color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights"
@@ -26,12 +27,14 @@
       device-orientation-permission-ui="enabled: true"
     >
       <a-assets>
-        <!-- Replace this with your video -->
+        <!-- Video File -->
         <video id="video" src="video.mp4" autoplay loop muted playsinline preload="auto" crossorigin="anonymous"></video>
       </a-assets>
 
+      <!-- Camera Setup -->
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+      <!-- AR Target Entity -->
       <a-entity mindar-image-target="targetIndex: 0" id="target">
         <!-- Video display plane -->
         <a-video 
@@ -43,7 +46,6 @@
       </a-entity>
     </a-scene>
 
-    <!-- Video control logic -->
     <script>
       const video = document.querySelector("#video");
       const targetEntity = document.querySelector("#target");

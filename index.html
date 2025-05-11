@@ -1,68 +1,82 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>MindAR Video Overlay</title>
+<head>
+  <title>MindAR Video Overlay</title>
 
-    <!-- MindAR core -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image.prod.js"></script>
+  <!-- MindAR Core -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image.prod.js"></script>
 
-    <!-- A-Frame -->
-    <script src="https://unpkg.com/aframe@1.2.0/dist/aframe.min.js"></script>
+  <!-- A-Frame -->
+  <script src="https://unpkg.com/aframe@1.2.0/dist/aframe.min.js"></script>
 
-    <!-- MindAR A-Frame integration -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+  <!-- MindAR + A-Frame Integration -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
 
-    <style>
-      body { margin: 0; overflow: hidden; }
-    </style>
-  </head>
-  <body>
-    <!-- A-Frame Scene with MindAR Integration -->
-    <a-scene
-      mindar-image="imageTargetSrc: targetsv2.mind; autoStart: true; uiLoading: yes;"
-      embedded
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: true"
-    >
-      <a-assets>
-        <!-- Video File -->
-        <video id="video" src="video.mp4" autoplay loop muted playsinline preload="auto" crossorigin="anonymous"></video>
-      </a-assets>
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <a-scene
+    mindar-image="imageTargetSrc: targetsv2.mind; autoStart: true; uiLoading: yes;"
+    embedded
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    device-orientation-permission-ui="enabled: true"
+  >
+    <a-assets>
+      <video
+        id="video"
+        src="video.mp4"
+        preload="auto"
+        autoplay
+        loop
+        muted
+        playsinline
+        crossorigin="anonymous"
+      ></video>
+    </a-assets>
 
-      <!-- Camera Setup -->
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-camera position="0 0 0" look-controls="enabled: false" camera="active: true"></a-camera>
 
-      <!-- AR Target Entity -->
-      <a-entity mindar-image-target="targetIndex: 0" id="target">
-        <!-- Video display plane -->
-        <a-video 
-          src="#video" 
-          width="1" 
-          height="0.5625" 
-          position="0 0 -0.1">
-        </a-video>
-      </a-entity>
-    </a-scene>
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-video
+        src="#video"
+        width="1"
+        height="0.5625"
+        position="0 0 -1"
+        rotation="0 0 0"
+      ></a-video>
+    </a-entity>
+  </a-scene>
 
-    <script>
+  <!-- Debug / Autoplay Fix -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
       const video = document.querySelector("#video");
-      const targetEntity = document.querySelector("#target");
 
-      targetEntity.addEventListener("targetFound", () => {
-        console.log("✅ Target FOUND!");
+      video.addEventListener("loadeddata", () => {
         video.play().then(() => {
-          console.log("🎥 Video started playing");
-        }).catch((err) => {
-          console.warn("🚫 Video play failed:", err);
+          console.log("🎥 Video is loaded and ready to play");
+        }).catch((e) => {
+          console.error("⚠️ Video playback failed:", e);
         });
       });
 
-      targetEntity.addEventListener("targetLost", () => {
+      document.querySelector("a-scene").addEventListener("arReady", () => {
+        console.log("🟢 MindAR initialized and scene loaded");
+      });
+
+      document.querySelector("a-scene").addEventListener("targetFound", () => {
+        console.log("✅ Target FOUND!");
+        video.play();
+      });
+
+      document.querySelector("a-scene").addEventListener("targetLost", () => {
         console.log("❌ Target LOST!");
         video.pause();
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
 </html>
